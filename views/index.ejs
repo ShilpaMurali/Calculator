@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+  <head>    
+    <title>Calculator</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel='stylesheet' href='/stylesheets/style.css' /> 
+   <link href='http://fonts.googleapis.com/css?family=Lekton' rel='stylesheet' type='text/css'></link>
+  </head>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+     <body>
+			<div class="col" ng-controller="IndexController" id="calculator">
+                <div id="digital_display">
+                    <p id="disp_digits">{{onScreen}}</p>
+                </div>
+	            <div id="keypad" class="clearfix">
+                <div id="numpad" class="buttongroup">
+					<button ng:click="input('7')">7</button>
+                    <button ng:click="input('8')">8</button>
+                    <button ng:click="input('9')">9</button>
+                    <button ng:click="input('4')">4</button>
+                    <button ng:click="input('5')">5</button>
+                    <button ng:click="input('6')">6</button>
+                    <button ng:click="input('1')">1</button>
+                    <button ng:click="input('2')">2</button>
+                    <button ng:click="input('3')">3</button>
+                    <button  class="tworowbt" ng:click="input(0)">0</button>
+                    <button ng:click="input('.')">.</button> 
+                </div>
+                <div id="operators" class="buttongroup">
+                    <button ng:click="clear()">C</button>
+                    <button ng:click="back()"><-</button>
+                    <button ng:click="input('-')">&minus;</button>
+                    <button ng:click="input('*')">*</button>
+                    <button class="twocolbt" ng:click="input('+')">+</button>
+                    <button ng:click="input('/')">&divide;</button>
+                    <button ng:click="submit()">=</button>        
+                </div>                    
+ 				</div>
+ 		</div>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script> 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write("<script src='js/libs/jquery.min.js'>\x3C/script>")</script>
+<script>
+var app=angular.module('myApp',[]);
+// Controllers
+app.controller('IndexController',function($scope,$http) {
+	
+	$scope.onScreen="0";
+	$scope.hello;
+	$scope.list="";
+	$scope.isAnswer = false;
+ 	$scope.input=function(btn)
+ 	{
+ 		if($scope.onScreen != 0 && $scope.list == ""){
+ 			$scope.list+=$scope.onScreen;
+ 		}
+		$scope.list+=btn;
+		$scope.onScreen=$scope.list; 	
+		$scope.isAnswer = false;	
+ 	};
+ 	$scope.clear=function()
+ 	{
+ 		$scope.onScreen="0";
+ 		$scope.list="";
+ 		$scope.isAnswer = false;
+ 	}
+ 	$scope.back=function()
+ 	{
+ 		if(!$scope.isAnswer)
+ 		{
+ 			$scope.onScreen = $scope.list.substring(0, $scope.list.length - 1);
+ 			$scope.list=$scope.onScreen;
+ 			if($scope.list=="")
+ 			{
+ 				$scope.onScreen="0";
+ 			}
+ 		}
+ 	}
+ 	$scope.submit=function()
+ 	{
+ 	$http(
+ 		{
+ 		
+			method : "POST",
+			url : '/calculate',
+			data :{
+			
+				"list" : $scope.list,
+			}
+		}).success(function(data)
+		 {
+		//checking the response data for statusCode
+			if (data.statusCode == 200)
+			 {
+				$scope.onScreen = data.output;		
+				$scope.list="";
+				$scope.isAnswer = true;
+			}	
+		}).error(function(error) {
+	});
+ 	};
+ });
+ </script>
+  </body>
+</html>
